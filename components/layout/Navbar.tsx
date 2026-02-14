@@ -18,7 +18,7 @@ export default function Navbar() {
     <nav className="w-full border-b px-6 py-4">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Link href="/" className="text-xl font-bold">
-          Dubai Laban
+          
         </Link>
 
         <div className="flex gap-6">
