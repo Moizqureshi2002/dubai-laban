@@ -1,6 +1,10 @@
 
 export default function MenuPage() {
+  
   return (
-    <div>Menupage</div>
+    <div className="">
+      Menupage
+      
+    </div>
   )
 }
