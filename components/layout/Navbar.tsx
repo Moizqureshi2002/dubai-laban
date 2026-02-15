@@ -1,62 +1,134 @@
-"use client";
+"use client"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import DLlogo from "../../public/duabi-laban-logo-bgremove.png";
+import Image from "next/image"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
-import DLLogo from "../../public/duabi-laban-logo-bgremove.png"
+interface NavLink {
+  label: string;
+  href: string;
+}
 
-export default function Navbar() {
-  const pathname = usePathname();
+const navLinks: NavLink[] = [
+  { label: "Home", href: "#hero" },
+  { label: "Menu", href: "#menu" },
+  { label: "Gallery", href: "#gallery" },
+  { label: "Our Story", href: "#story" },
+];
 
-  const normalize = (path: string) =>
-    path === "/" ? "/" : path.endsWith("/") ? path : path + "/";
+const Navbar: React.FC = () => {
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
-  const isActive = (path: string) =>
-    normalize(pathname) === normalize(path);
+  useEffect(() => {
+    const handleScroll = (): void => {
+      setScrolled(window.scrollY > 50);
+    };
 
-  const linkClass = (path: string) =>
-    `relative pb-1 transition-colors ${
-      isActive(path)
-        ? "text-black"
-        : "text-gray-600 hover:text-black"
-    }`;
-
-  const underlineClass = (path: string) =>
-    `absolute left-0 bottom-0 h-[2px] w-full bg-black transition-all duration-300 ${
-      isActive(path) ? "scale-x-100" : "scale-x-0"
-    } origin-left`;
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="w-full  px-6 py-4 fixed top-0 left-0">
-      <div className="max-w-[90%] mx-auto flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold">
-          <Image
-            src={DLLogo}
-            alt="Dubai Laban Logo"
-            width={120}
-            height={40}
-            priority
-            className=" drop-shadow-2xl"
-          />
-        </Link>
-        <div className="flex gap-8">
-          {[
-            { name: "Home", path: "/" },
-            { name: "About", path: "/about" },
-            { name: "Menu", path: "/menu" },
-            { name: "Contact", path: "/contact" },
-          ].map((item) => (
-            <Link
-              key={item.name}
-              href={item.path}
-              className={linkClass(item.path)}
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 max-w-[100%] mx-auto ${
+        scrolled
+          ? "bg-background/95 backdrop-blur-md shadow-lg py-3"
+          : "bg-transparent py-5 text-white"
+      }`}
+    >
+      <div className="max-w-[90%] mx-auto">
+      <div className="section-padding flex items-center justify-between">
+        <a href="#hero" className="flex items-center">
+          <Image src={DLlogo} alt="Dubai Laban" className="h-12 md:h-14 w-auto" />
+        </a>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-10">
+          {navLinks.map((link: NavLink) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className={`font-body text-sm tracking-widest uppercase transition-colors duration-300 ${
+                scrolled
+                  ? "text-foreground hover:text-primary"
+                  : "text-primary-foreground/90 hover:text-primary-foreground"
+              }`}
             >
-              {item.name}
-              <span className={underlineClass(item.path)} />
-            </Link>
+              {link.label}
+            </a>
           ))}
+
+          <a
+            href="#menu"
+            className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full text-sm font-medium bg-blue-800 text-white hover:bg-blue-700 tracking-wide uppercase transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105"
+          >
+            Order Now
+          </a>
         </div>
+
+        {/* Mobile Toggle */}
+        <button
+          onClick={() => setMobileOpen((prev) => !prev)}
+          className="md:hidden flex flex-col gap-1.5 p-2"
+          aria-label="Toggle menu"
+          type="button"
+        >
+          {[0, 1, 2].map((i: number) => (
+            <span
+              key={i}
+              className={`block w-6 h-0.5 transition-all duration-300 ${
+                scrolled ? "bg-foreground" : "bg-primary-foreground"
+              } ${
+                mobileOpen
+                  ? i === 0
+                    ? "rotate-45 translate-y-2"
+                    : i === 1
+                    ? "opacity-0"
+                    : "-rotate-45 -translate-y-2"
+                  : ""
+              }`}
+            />
+          ))}
+        </button>
       </div>
-    </nav>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="md:hidden bg-background/98 backdrop-blur-lg border-t border-border"
+        >
+          <div className="section-padding py-6 flex flex-col gap-4">
+            {navLinks.map((link: NavLink) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="text-foreground font-body text-lg py-2 border-b border-border/50"
+              >
+                {link.label}
+              </a>
+            ))}
+
+            <a
+              href="#menu"
+              onClick={() => setMobileOpen(false)}
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-center font-medium mt-2"
+            >
+              Order Now
+            </a>
+          </div>
+        </motion.div>
+      )}
+      </div>
+
+    </motion.nav>
   );
-}
+};
+
+export default Navbar;

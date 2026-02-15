@@ -1,6 +1,9 @@
 // app/page.tsx
 
+import Footer from "@/components/layout/Footer";
 import Hero from "./home/Hero";
+import MenuSection from "./home/Menu";
+import Testimonials from "./home/Testimonials";
 
 export const metadata = {
   title: "AI Code Execution Platform",
@@ -11,6 +14,9 @@ export default function Home() {
   return (
     <main>
       <Hero/>
+      <MenuSection/>
+      <Testimonials/>
+      <Footer/>
     </main>
   );
 }
